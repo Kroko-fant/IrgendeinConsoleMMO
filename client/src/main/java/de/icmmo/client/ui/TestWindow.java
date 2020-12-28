@@ -2,7 +2,7 @@ package de.icmmo.client.ui;
 
 public class TestWindow extends Window {
 
-    private static final String TEXT = "Hello World!";
+    private static final String TEXT = "Hello World! Lol";
 
     protected TestWindow(int x, int y) {
         super(new Rectangle(x, y, TEXT.length(), 1));
