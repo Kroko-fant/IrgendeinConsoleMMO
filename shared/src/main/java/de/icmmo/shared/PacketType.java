@@ -1,6 +1,4 @@
 package de.icmmo.shared;
 
-public class Shared {
-
-
+public enum PacketType {
 }
