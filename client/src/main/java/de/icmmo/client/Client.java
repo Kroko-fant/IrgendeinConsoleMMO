@@ -13,7 +13,7 @@ public class Client {
     public Client(String ip, int port) throws IOException {
         //this.socket = new Socket(ip, port);
         this.receiver = new Receiver();
-        if (System.getProperties().getProperty("os").startsWith("Windows")){
+        if (System.getProperties().getProperty("os.name").startsWith("Windows")){
             this.inputReader = new WindowsReader();
         } else {
             this.inputReader = new LinuxReader();
@@ -30,15 +30,20 @@ public class Client {
 
         while (receiver.isAlive()){
             char c = inputReader.readNextChar();
-            System.out.println(c);
-            if (c == '^'){
-                return;
+            System.out.println(c == 'x');
+            if (c == 'x'){
+                break;
             }
         }
+        inputReader.end();
     }
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
+
+        //TODO: Remove this
+        if (args.length == 0)
+            args = new String[]{"localhost", "80"};
         System.out.println("Connecting...");
         if (args.length > 2){
             System.err.println("Invalid Args! Args should be length 2");

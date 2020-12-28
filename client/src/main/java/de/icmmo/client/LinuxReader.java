@@ -5,4 +5,9 @@ public class LinuxReader extends Reader{
     public char readNextChar() {
         return 0;
     }
+
+    @Override
+    public void end() {
+
+    }
 }
