@@ -1,33 +1,35 @@
 package de.icmmo.client;
 
+import de.icmmo.shared.Packet;
+
 import java.io.*;
 import java.net.Socket;
-import java.util.Scanner;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Client {
 
     private Socket socket;
-    private Thread receiver, sender;
-    private Reader inputReader;
+    private final Thread receiver;
+    private Thread sender;
+    private final Reader inputReader;
+    protected final ConcurrentLinkedQueue<Packet> queue;
+
 
     public Client(String ip, int port) throws IOException {
-        //this.socket = new Socket(ip, port);
-        this.receiver = new Receiver();
+        this.socket = new Socket(ip, port);
+        this.receiver = new Receiver(socket, this);
         if (System.getProperties().getProperty("os.name").startsWith("Windows")){
             this.inputReader = new WindowsReader();
         } else {
             this.inputReader = new LinuxReader();
         }
+        this.queue = new ConcurrentLinkedQueue<Packet>();
     }
 
     protected void runClient() {
         receiver.setDaemon(true);
         receiver.start();
-
-        Scanner scanner = new Scanner(new InputStreamReader(System.in));
-        scanner.useDelimiter("[A-Z]");
-
-
         while (receiver.isAlive()){
             char c = inputReader.readNextChar();
             System.out.println(c == 'x');
