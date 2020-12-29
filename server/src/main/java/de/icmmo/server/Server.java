@@ -16,11 +16,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Server {
 
     private LinkedBlockingQueue<Packet> packetQueue;
-    private User[] users;
+    private final User[] users;
     private final Object outputLock;
     private int userPointer;
-    private IncomingConnectionHandler connectionHandler;
-    private Database db;
+    private final IncomingConnectionHandler connectionHandler;
+    private final Database db;
 
     public Server(Database db, ServerSocket incoming, int size) {
         this.db = db;
@@ -52,15 +52,15 @@ public class Server {
      * @param incomingConnection a new Socket Connection representing a client
      * @return returns if the connection was successfull
      * **/
-    public boolean addConnection(Socket incomingConnection, ObjectOutputStream outputStream,
+    public boolean addConnection(String userName, Socket incomingConnection, ObjectOutputStream outputStream,
                                  ObjectInputStream inputStream) {
         int temp = userPointer;
         synchronized (outputLock) {
-            temp += 1 % users.length;
+            userPointer = (userPointer + 1) % users.length;
             while (userPointer != temp) {
                 if (users[temp] == null) {
                     try {
-                        users[temp] = new User(incomingConnection, outputStream, inputStream);
+                        users[temp] = new User(userName, incomingConnection, outputStream, inputStream);
                         System.out.println("Write");
                         users[temp].write(
                                 new ConnectionPacket(true, "success", "Connection successful"));
@@ -69,7 +69,7 @@ public class Server {
                     }
                     return true;
                 }
-                temp += 1 % users.length;
+                userPointer = (userPointer + 1) % users.length;
             }
         }
         try {

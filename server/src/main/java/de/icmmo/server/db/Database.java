@@ -45,11 +45,10 @@ public class Database {
     }
 
     public boolean validateLogin(String username, String password) throws SQLException, IndexOutOfBoundsException {
-        PreparedStatement statement = connection.prepareStatement(DefaultQueries.searchUserAndPassword);
+        PreparedStatement statement = connection.prepareStatement(DefaultQueries.searchUserPassword);
         statement.setString(1, username);
-        statement.setString(2, password);
-
-        return statement.executeQuery().getFetchSize() == 1;
+        ResultSet resultSet = statement.executeQuery();
+        return resultSet.getString(1).equals(password) ;
     }
 
     public boolean userNameTaken(String username) throws SQLException {

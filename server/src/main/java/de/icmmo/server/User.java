@@ -9,11 +9,13 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class User {
+    String userName;
     Socket userSocket;
     ObjectOutputStream outputStream;
     ObjectInputStream inputStream;
 
-    public User(Socket userSocket, ObjectOutputStream outputStream, ObjectInputStream inputStream) throws IOException {
+    public User(String userName, Socket userSocket, ObjectOutputStream outputStream, ObjectInputStream inputStream) throws IOException {
+        this.userName = userName;
         this.userSocket = userSocket;
         this.outputStream = outputStream;
         this.inputStream = inputStream;
