@@ -20,7 +20,7 @@ public class KeyInputThread extends Thread {
             inputReader = new LinuxReader();
         }
 
-        while (this.isAlive() && !this.isInterrupted()) {
+        while (!this.isInterrupted()) {
             char c = inputReader.readNextChar();
             if (c == 'x') {
                 break;

@@ -14,7 +14,7 @@ public class DispatchTask {
 
     public void run() {
         mainWindow.draw();
-        while (mainWindow.isEnabled()) {
+        while (true) {
             boolean update;
             try {
                 update = client.handle(client.queue.take());
@@ -22,6 +22,7 @@ public class DispatchTask {
                 return;
             }
             if (update) {
+                if (!mainWindow.isEnabled()) break;
                 mainWindow.draw();
             }
         }

@@ -33,7 +33,6 @@ public class Client extends Observable<Packet> {
         Thread input = new KeyInputThread(this);
         input.setDaemon(true);
         input.start();
-
     }
 
     private boolean login() throws IOException, InterruptedException {
