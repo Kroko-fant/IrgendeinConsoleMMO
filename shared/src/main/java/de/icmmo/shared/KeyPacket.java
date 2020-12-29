@@ -13,7 +13,7 @@ public class KeyPacket extends Packet {
     }
 
     @Override
-    PacketType getType() {
+    public PacketType getType() {
         return PacketType.KEY_INPUT;
     }
 }

@@ -8,7 +8,7 @@ public class ConnectionPacket extends Packet{
     }
 
     @Override
-    PacketType getType() {
+    public PacketType getType() {
         return PacketType.CONNECTION;
     }
 }
