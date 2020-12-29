@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="game.sqlite" uuid="1c96b7dc-db62-4efc-aed4-ff888376e50e">
+    <data-source source="LOCAL" name="SQLite - game.sqlite" uuid="1c96b7dc-db62-4efc-aed4-ff888376e50e">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:game.sqlite</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="game" uuid="4e99c835-bc42-4f41-a457-fd8e7910d9ee">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:X:\dokumente\JL\Programmieren\Java\ErstiConsoleMMO\IrgendeinConsoleMMO\game.sqlite</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

@@ -6,10 +6,10 @@ public class PlayerData {
     private int level, xp, gold, health, physicalDamage, physicalDefence, magicDamage, magicDefence, speed, luck;
 
     public PlayerData(String name, int level, int xp, int gold, int health, int physicalDamage, int physicalDefence, int magicDamage, int magicDefence, int speed, int luck) {
-        this.level = level;
         this.name = name;
-        this.gold = gold;
+        this.level = level;
         this.xp = xp;
+        this.gold = gold;
         this.health = health;
         this.physicalDamage = physicalDamage;
         this.physicalDefence = physicalDefence;

@@ -9,17 +9,27 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class User {
-    String userName;
-    Socket userSocket;
-    ObjectOutputStream outputStream;
-    ObjectInputStream inputStream;
+    private String userName;
+    private Socket userSocket;
+    private final ObjectOutputStream outputStream;
+    private UserInputReader userInputReader;
 
     public User(String userName, Socket userSocket, ObjectOutputStream outputStream, ObjectInputStream inputStream) throws IOException {
         this.userName = userName;
         this.userSocket = userSocket;
         this.outputStream = outputStream;
-        this.inputStream = inputStream;
+        this.userInputReader = new UserInputReader(this, inputStream);
+        userInputReader.setDaemon(true);
+        userInputReader.start();
+    }
 
+    public void disconnect(){
+        try {
+            outputStream.close();
+            userInputReader.interrupt();
+            userSocket.close();
+        } catch (IOException ignored){
+        }
     }
 
     public void write(Packet p) throws IOException {

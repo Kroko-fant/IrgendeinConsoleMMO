@@ -38,7 +38,7 @@ public class Client extends Observable<Packet> {
     }
 
     private boolean login() throws IOException, InterruptedException {
-        ConnectionPacket packet = null;
+        ConnectionPacket packet;
 
         // Initialise a inputreader and send a login request to the server
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -60,7 +60,6 @@ public class Client extends Observable<Packet> {
             outputChannel.writeObject(new ConnectionPacket(null, packet.getRequesttype(),
                     br.readLine()));
             packet = (ConnectionPacket) queue.take();
-            System.out.println(packet.getRequesttype());
         }
 
         System.out.println("Login");

@@ -7,10 +7,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class WindowsReader extends Reader {
 
-
-
     private final JFrame frame;
-    ConcurrentLinkedQueue<Character> blockingQueue = new ConcurrentLinkedQueue<Character>();
+    private final ConcurrentLinkedQueue<Character> blockingQueue = new ConcurrentLinkedQueue<>();
+
     public WindowsReader() {
         this.frame = new JFrame();
         synchronized (this.frame) {
@@ -35,6 +34,8 @@ public class WindowsReader extends Reader {
     public char readNextChar() {
         while (blockingQueue.isEmpty()) {
             try {
+                // Call to 'Thread.sleep()' in a loop, probably busy-waiting
+                // -> It is
                 Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();

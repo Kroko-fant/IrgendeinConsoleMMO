@@ -51,8 +51,8 @@ public class LoginManager extends Thread {
                 if (request.getRequesttype().startsWith("login")) {
                     userName = establishLogin();
                     break;
-                } else if (request.getRequesttype().startsWith("register") ){
-                    userName= register();
+                } else if (request.getRequesttype().startsWith("register")) {
+                    userName = register();
                     break;
                 }
             } catch (IOException | ClassNotFoundException | NoSuchAlgorithmException ignored) {
@@ -72,20 +72,21 @@ public class LoginManager extends Thread {
     private String register() throws NoSuchAlgorithmException {
         MessageDigest hasingObject = MessageDigest.getInstance("SHA-256");
         String username = "";
-        ConnectionPacket password = null;
+        ConnectionPacket password;
+        boolean nametaken = false;
         while (true) {
-            try {
-                do {
-                    while (username.length() < 3) {
-                        outputChannel.writeObject(
-                                new ConnectionPacket(null, "username",
-                                        "[Register] Please provide a username!"));
-                        username = ((ConnectionPacket) inputChannel.readObject()).getText();
-                    }
-                } while (server.getDb().userNameTaken(username));
-            } catch (IOException | ClassNotFoundException | SQLException ignored) {
-
+            while (username.length() < 3 || nametaken) {
+                try {
+                    outputChannel.writeObject(
+                            new ConnectionPacket(null, "username",
+                                    "[Register] Please provide a username!"));
+                    username = ((ConnectionPacket) inputChannel.readObject()).getText();
+                    nametaken = server.getDb().userNameTaken(username);
+                } catch (IOException | ClassNotFoundException | SQLException ignored) {
+                }
             }
+
+
             try {
                 outputChannel.writeObject(new ConnectionPacket(null, "password",
                         "[Register] Please provide a password!"));

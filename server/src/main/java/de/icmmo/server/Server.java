@@ -41,7 +41,13 @@ public class Server {
 
     public void close() {
         db.close();
-        //TODO: Disconnect all clients
+        synchronized (outputLock) {
+            for (int i = 0; i < users.length;i++)
+                if (users[i] != null) {
+                    users[i].disconnect();
+                    users[i] = null;
+                }
+        }
         try {
             connectionHandler.closeConnection();
         } catch (IOException ignored) {
@@ -80,6 +86,10 @@ public class Server {
         return false;
     }
 
+
+    /**
+     * @param command An input of a command that has to be executed
+     * **/
     private static void evaluateCommand(String command) throws UnknownHostException {
         String[] splitted = command.split(" ");
         switch (splitted[0]) {

@@ -54,7 +54,8 @@ public class Database {
     public boolean userNameTaken(String username) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(DefaultQueries.checkUserName);
         statement.setString(1, username);
-        return statement.executeQuery().getFetchSize() > 0;
+        ResultSet resultSet = statement.executeQuery();
+        return resultSet.getString(1).equals(username);
     }
 
     public void insertUser(String username, String password) throws SQLException {
