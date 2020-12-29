@@ -1,6 +1,7 @@
 package de.icmmo.server;
 
 import de.icmmo.server.db.Database;
+import de.icmmo.server.login.IncomingConnectionHandler;
 import de.icmmo.shared.ConnectionPacket;
 import de.icmmo.shared.Packet;
 
@@ -17,12 +18,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Server {
 
-    LinkedBlockingQueue<Packet> packetQueue;
-    User[] users;
-    final Object outputLock;
-    int userPointer;
-    IncomingConnectionHandler connectionHandler;
-    Database db;
+    private LinkedBlockingQueue<Packet> packetQueue;
+    private User[] users;
+    private final Object outputLock;
+    private int userPointer;
+    private IncomingConnectionHandler connectionHandler;
+    private Database db;
 
     public Server(Database db, ServerSocket incoming, int size) {
         this.db = db;
@@ -37,11 +38,15 @@ public class Server {
         }
     }
 
+    public Database getDb() {
+        return db;
+    }
+
     public void close() {
         db.close();
         //TODO: Disconnect all clients
         try {
-            connectionHandler.incoming.close();
+            connectionHandler.closeConnection();
         } catch (IOException ignored) {
         }
     }
@@ -50,7 +55,7 @@ public class Server {
      * @param incomingConnection a new Socket Connection representing a client
      * @return returns if the connection was successfull
      * **/
-    protected boolean addConnection(Socket incomingConnection) {
+    public boolean addConnection(Socket incomingConnection) {
         int temp = userPointer;
         synchronized (outputLock) {
             do {

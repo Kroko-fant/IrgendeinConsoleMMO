@@ -43,4 +43,11 @@ public class Database {
     public Connection getConnection() {
         return connection;
     }
+
+    public boolean validateLogin(String username, String password) throws SQLException {
+        PreparedStatement  statement = connection.prepareStatement(DefaultQueries.searchUserAndPassword);
+        statement.setString(0, username);
+        statement.setString(1, password);
+        return statement.executeQuery().getFetchSize() == 1;
+    }
 }
