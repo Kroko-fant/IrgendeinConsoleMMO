@@ -63,10 +63,12 @@ public abstract class Window {
     }
 
     protected void writeText(int x, int y, String text) {
+        if (text == null) return;
         writeText(x, y, text.length(), text);
     }
 
     protected void writeText(int x, int y, int maxWidth, String text) {
+        if (text == null) return;
         final int width = Math.min(Math.min(text.length(), dimensions.getWidth() - x), maxWidth);
         if (width <= 0) return;
         if (y < 0 || y >= dimensions.getHeight()) return;

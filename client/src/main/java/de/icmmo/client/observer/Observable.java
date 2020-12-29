@@ -1,11 +1,10 @@
 package de.icmmo.client.observer;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Observable<T> {
 
-    private final List<WeakObserver<T>> observer = new LinkedList<>();
+    private final ConcurrentLinkedQueue<WeakObserver<T>> observer = new ConcurrentLinkedQueue<>();
 
     public void addObserver(Observer<T> o) {
         observer.add(new WeakObserver<>(o));

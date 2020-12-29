@@ -1,6 +1,7 @@
 package de.icmmo.client;
 
 import de.icmmo.client.observer.Observable;
+import de.icmmo.client.observer.Observer;
 import de.icmmo.shared.ConnectionPacket;
 import de.icmmo.shared.Packet;
 
@@ -73,6 +74,13 @@ public class Client extends Observable<Packet> {
         inputThread.stopRead();
     }
 
+    public void sendPacket(Packet packet) {
+        try {
+            outputChannel.writeObject(packet);
+        } catch (IOException e) {
+            System.err.println("Error while sending packet: " + e.getMessage());
+        }
+    }
 
     public static void main(String[] args) {
         //TODO: Remove this

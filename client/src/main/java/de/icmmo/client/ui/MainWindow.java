@@ -4,7 +4,9 @@ import data.LevelHelper;
 import data.PlayerData;
 import de.icmmo.client.Client;
 import de.icmmo.shared.Packet;
+import de.icmmo.shared.PacketType;
 import de.icmmo.shared.PlayerDataPacket;
+import de.icmmo.shared.PlayerDataRequestPacket;
 
 import java.util.Arrays;
 
@@ -36,11 +38,13 @@ public class MainWindow extends BorderedWindow {
         DialogChoiceWindow win = new DialogChoiceWindow(new Rectangle(1, 3, WIDTH - 2, HEIGHT - 4), client,
                 new String[]{"Stats", "Exit"},
                 c -> switch(c) {
-                    case 0 -> new BorderedWindow(new Rectangle(4, 3, 20, 10));
+                    case 0 -> new PlayerStatWindow(new Rectangle(2, 0, WIDTH - 2, HEIGHT - 4), client);
                     default -> null;
                 });
         win.setCloseCallback(() -> setEnabled(false));
         children.add(win);
+
+        client.sendPacket(new PlayerDataRequestPacket());
     }
 
     private void initWindow() {
@@ -64,8 +68,9 @@ public class MainWindow extends BorderedWindow {
     }
 
     private boolean receivePacket(Packet p) {
-        switch (p.getType()) {
-            case PLAYER_DATA -> writePlayerStats(((PlayerDataPacket) p).getPlayerData());
+        if (p.getType() == PacketType.PLAYER_DATA) {
+            writePlayerStats(((PlayerDataPacket) p).getPlayerData());
+            return true;
         }
         return false;
     }

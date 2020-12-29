@@ -1,6 +1,8 @@
 package de.icmmo.client;
 
+import data.PlayerData;
 import de.icmmo.client.ui.MainWindow;
+import de.icmmo.shared.PlayerDataPacket;
 
 public class DispatchTask {
 
