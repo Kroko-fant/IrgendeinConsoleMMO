@@ -50,7 +50,9 @@ public abstract class Window {
     }
 
     protected void writeText(int x, int y, String text) {
-        final int width = text.length();
+        final int width = Math.min(text.length(), dimensions.getWidth() - x);
+        if (width <= 0) return;
+        if (y < 0 || y >= dimensions.getHeight()) return;
         System.arraycopy(text.toCharArray(), 0, drawnImage[y], x, width);
     }
 }

@@ -1,50 +1,74 @@
 package de.icmmo.client.ui;
 
 import de.icmmo.client.Client;
-import de.icmmo.client.observer.Observer;
+import de.icmmo.shared.KeyPacket;
 import de.icmmo.shared.Packet;
 
-import java.util.List;
+import java.util.function.IntConsumer;
 
-public class MultiChoiceWindow extends Window implements Observer<Packet> {
+public class MultiChoiceWindow extends Window {
 
-    private final List<Choice> choices;
+    private final String[] choices;
+    private final IntConsumer callback;
     private int choice = 0;
 
-    protected MultiChoiceWindow(Rectangle dimensions, Client client, List<Choice> choices) {
+    protected MultiChoiceWindow(Rectangle dimensions, Client client, String[] choices, IntConsumer callback) {
         super(dimensions);
         this.choices = choices;
+        this.callback = callback;
+        //client.addObserver(this::receive);
+        writeValues();
+        updateWindow();
     }
 
-    @Override
-    protected void initWindow() {
-
+    private void writeValues() {
+        for (int i = 0; i < choices.length; ++i) {
+            writeText(3, i, choices[i]);
+        }
     }
 
     private void updateWindow() {
-
+        for (int i = 0; i < choices.length; ++i) {
+            writeText(0, i, i == choice ? "->" : "  ");
+        }
     }
 
-    @Override
     public boolean receive(Packet value) {
-        return switch (value.getType()) {
-            case KEY_INPUT -> {
+        try {
+            return switch (value.getType()) {
+                case KEY_INPUT -> handleKeyInput(((KeyPacket) value).getKey());
+                default -> false;
+            };
+        } catch (ClassCastException ignored) {
+            return false;
+        }
+    }
+
+    private boolean handleKeyInput(char c) {
+        if (choices.length == 0) return false;
+        return switch (c) {
+            case 's' -> {
+                // Move down
+                choice = (choice + 1) % choices.length;
+                updateWindow();
+                yield true;
+            }
+            case 'w'-> {
+                // Move up
+                choice = (choice - 1 + choices.length) % choices.length;
+                updateWindow();
+                yield true;
+            }
+            case ' ' -> {
+                // Confirm
+                callback.accept(choice);
                 yield true;
             }
             default -> false;
         };
     }
 
-    public abstract static class Choice implements Runnable {
+    @Override
+    protected void initWindow() { }
 
-        private final String name;
-
-        public Choice(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
 }
