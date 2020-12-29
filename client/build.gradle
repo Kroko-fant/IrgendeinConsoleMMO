@@ -26,4 +26,7 @@ jar {
                 'Main-Class': 'de.icmmo.client.Client'
         )
     }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
