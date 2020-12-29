@@ -62,6 +62,6 @@ public class Database {
         PreparedStatement statement = connection.prepareStatement(DefaultQueries.insertUser);
         statement.setString(1, username);
         statement.setString(2, password);
-        statement.executeQuery();
+        statement.executeUpdate();
     }
 }

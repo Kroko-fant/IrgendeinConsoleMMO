@@ -7,5 +7,5 @@ public class DefaultQueries {
     };
     public static final String searchUserAndPassword = "SELECT * FROM PLAYERS WHERE USERNAME == ? AND PASSWORD == ?";
     public static final String checkUserName = "SELECT name FROM PLAYERS WHERE USERNAME == ?";
-    public static final String insertUser = "REPLACE INTO PLAYERS (username, password) VALUES(?,?)";
+    public static final String insertUser = "INSERT INTO PLAYERS (username, password) VALUES(?,?)";
 }

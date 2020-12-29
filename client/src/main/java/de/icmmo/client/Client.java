@@ -61,13 +61,14 @@ public class Client extends Observable<Packet> {
 
         packet = (ConnectionPacket) queue.take();
 
-
-        while (packet == null || packet.getSuccess() == null || !packet.getSuccess()) {
-            packet = (ConnectionPacket) queue.take();
+        while (packet.getSuccess() == null || !packet.getSuccess()) {
             System.out.println(packet.getText());
             outputChannel.writeObject(new ConnectionPacket(null, packet.getRequesttype(),
                     br.readLine()));
+            packet = (ConnectionPacket) queue.take();
+            System.out.println(packet.getRequesttype());
         }
+
         System.out.println("Login");
         return true;
     }

@@ -5,10 +5,7 @@ import de.icmmo.server.login.IncomingConnectionHandler;
 import de.icmmo.shared.ConnectionPacket;
 import de.icmmo.shared.Packet;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -55,13 +52,16 @@ public class Server {
      * @param incomingConnection a new Socket Connection representing a client
      * @return returns if the connection was successfull
      * **/
-    public boolean addConnection(Socket incomingConnection) {
+    public boolean addConnection(Socket incomingConnection, ObjectOutputStream outputStream,
+                                 ObjectInputStream inputStream) {
         int temp = userPointer;
         synchronized (outputLock) {
-            do {
+            temp += 1 % users.length;
+            while (userPointer != temp) {
                 if (users[temp] == null) {
                     try {
-                        users[temp] = new User(incomingConnection);
+                        users[temp] = new User(incomingConnection, outputStream, inputStream);
+                        System.out.println("Write");
                         users[temp].write(
                                 new ConnectionPacket(true, "success", "Connection successful"));
                     } catch (IOException ignored) {
@@ -70,7 +70,7 @@ public class Server {
                     return true;
                 }
                 temp += 1 % users.length;
-            } while (userPointer != temp);
+            }
         }
         try {
             PrintWriter pw = new PrintWriter(incomingConnection.getOutputStream());

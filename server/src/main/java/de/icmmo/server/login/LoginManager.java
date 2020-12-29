@@ -53,7 +53,10 @@ public class LoginManager extends Thread {
             }
         }
 
-        boolean success = server.addConnection(incomingConnection);
+
+
+
+        boolean success = server.addConnection(incomingConnection, outputChannel, inputChannel);
         System.out.println(success ? "Connection successfull" : "Connection refused");
         if (!success) {
             try {
@@ -71,7 +74,7 @@ public class LoginManager extends Thread {
                 do {
                     while (username.length() < 3) {
                         outputChannel.writeObject(
-                                new ConnectionPacket(null, "username", "Please provide a username!"));
+                                new ConnectionPacket(null, "username", "[Register] Please provide a username!"));
                         username = ((ConnectionPacket) inputChannel.readObject()).getText();
                     }
                 } while (server.getDb().userNameTaken(username));
@@ -79,11 +82,12 @@ public class LoginManager extends Thread {
 
             }
             try {
-                outputChannel.writeObject(new ConnectionPacket(null, "password", "Please provide a password!"));
+                outputChannel.writeObject(new ConnectionPacket(null, "password", "[Register] Please provide a password!"));
                 password = ((ConnectionPacket) inputChannel.readObject()).getText();
                 server.getDb().insertUser(username, password);
                 break;
             } catch (IOException | ClassNotFoundException | SQLException ignored) {
+                System.out.println("Exception while inserting a new User");
             }
         }
     }
@@ -98,10 +102,10 @@ public class LoginManager extends Thread {
             try {
                 //Ask for Username
                 outputChannel.writeObject(
-                        new ConnectionPacket(null, "username", "Please provide a username!"));
+                        new ConnectionPacket(null, "username", "[Login] Please provide a username!"));
                 username = (ConnectionPacket) inputChannel.readObject();
                 // Ask for Password
-                outputChannel.writeObject(new ConnectionPacket(null, "password", "Please provide a password!"));
+                outputChannel.writeObject(new ConnectionPacket(null, "password", "[Login] Please provide a password!"));
                 password = (ConnectionPacket) inputChannel.readObject();
                 System.out.println(username.getText() + password.getText());
                 success = server.getDb().validateLogin(username.getText(), password.getText());

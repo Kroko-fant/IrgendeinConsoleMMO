@@ -24,7 +24,8 @@ public class Receiver extends Thread {
                     if (packet == null)
                         continue;
                     client.queue.add(packet);
-                } catch (ClassNotFoundException ignored) {
+                } catch (IOException | ClassNotFoundException ignored) {
+                    System.out.println("Error receiving a package " +ignored.getMessage());
                 }
             }
         } catch (IOException ignored) {
