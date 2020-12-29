@@ -9,6 +9,6 @@ public class ConnectionPacket extends Packet{
 
     @Override
     PacketType getType() {
-        return null;
+        return PacketType.CONNECTION;
     }
 }
