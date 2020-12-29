@@ -1,0 +1,29 @@
+name: BuildServer with Gradle
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push
+  push:
+  # Allow manual run from the actions tab
+  workflow_dispatch:
+
+# Tasks
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 15
+        uses: actions/setup-java@v1
+        with:
+          java-version: 15
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build Jar
+        run: ./gradlew :server:jar
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.1
+        with:
+          name: Server
+          path: server/build/libs
