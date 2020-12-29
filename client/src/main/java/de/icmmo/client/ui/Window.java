@@ -63,9 +63,21 @@ public abstract class Window {
     }
 
     protected void writeText(int x, int y, String text) {
-        final int width = Math.min(text.length(), dimensions.getWidth() - x);
+        writeText(x, y, text.length(), text);
+    }
+
+    protected void writeText(int x, int y, int maxWidth, String text) {
+        final int width = Math.min(Math.min(text.length(), dimensions.getWidth() - x), maxWidth);
         if (width <= 0) return;
         if (y < 0 || y >= dimensions.getHeight()) return;
         System.arraycopy(text.toCharArray(), 0, drawnImage[y], x, width);
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

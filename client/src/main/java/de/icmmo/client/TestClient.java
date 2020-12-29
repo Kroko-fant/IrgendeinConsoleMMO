@@ -1,4 +1,4 @@
-package de.icmmo.client;
+/*package de.icmmo.client;
 
 import de.icmmo.client.observer.Observable;
 import de.icmmo.shared.ConnectionPacket;
@@ -7,34 +7,42 @@ import de.icmmo.shared.Packet;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class Client extends Observable<Packet> {
+public class TestClient extends Observable<Packet> {
 
-    private final Socket socket;
-    private final ObjectOutputStream outputChannel;
-    private final Thread receiver;
+    //private final Socket socket;
+    //private final ObjectOutputStream outputChannel;
+    //private final Thread receiver;
+    private final Reader inputReader;
+    private final DispatchThread dispatchThread;
     protected final LinkedBlockingQueue<Packet> queue;
 
     public Client(String ip, int port) throws IOException, LoginException, InterruptedException {
         // Initialising socket and outputchannel
-        this.socket = new Socket(ip, port);
-        this.outputChannel = new ObjectOutputStream(socket.getOutputStream());
+        //this.socket = new Socket(ip, port);
+        //this.outputChannel = new ObjectOutputStream(socket.getOutputStream());
 
         // Starts a receiver that puts packages in the queue
         this.queue = new LinkedBlockingQueue<>();
-        this.receiver = new Receiver(socket, this);
-        receiver.setDaemon(true);
-        receiver.start();
+        //this.receiver = new Receiver(socket, this);
+        //receiver.setDaemon(true);
+        //receiver.start();
 
-        if (!login())
-            throw new LoginException();
+        //if (!login())
+        //    throw new LoginException();
 
-        // Reads input and adds in queue
-        Thread input = new KeyInputThread(this);
-        input.setDaemon(true);
-        input.start();
-
+        // Uses an input handler depending on the operating system
+        if (System.getProperties().getProperty("os.name").startsWith("Windows")) {
+            this.inputReader = new WindowsReader();
+        } else {
+            this.inputReader = new LinuxReader();
+        }
+        // Manages Packages in the queue
+        dispatchThread = new DispatchThread(this);
+        dispatchThread.setDaemon(true);
+        dispatchThread.start();
     }
 
     private boolean login() throws IOException, InterruptedException {
@@ -42,32 +50,38 @@ public class Client extends Observable<Packet> {
 
         // Initialise a inputreader and send a login request to the server
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        outputChannel.writeObject(new ConnectionPacket(true, "start", ""));
+        //outputChannel.writeObject(new ConnectionPacket(true, "start", ""));
 
         // Checks for Login/Register
         packet = (ConnectionPacket) queue.take();
         System.out.println(packet.getText());
 
         //Answers the server if the client wants to register or login
-        outputChannel.writeObject(new ConnectionPacket(null, br.readLine(), ""));
+        //outputChannel.writeObject(new ConnectionPacket(null, br.readLine(), ""));
 
         packet = (ConnectionPacket) queue.take();
 
-        while (packet.getSuccess() == null || !packet.getSuccess()) {
-            System.out.println(packet.getText());
-            outputChannel.writeObject(new ConnectionPacket(null, packet.getRequesttype(),
-                    br.readLine()));
-            packet = (ConnectionPacket) queue.take();
-            System.out.println(packet.getRequesttype());
-        }
 
+        while (packet == null || packet.getSuccess() == null || !packet.getSuccess()) {
+            packet = (ConnectionPacket) queue.take();
+            System.out.println(packet.getText());
+            //outputChannel.writeObject(new ConnectionPacket(null, packet.getRequesttype(),
+            //       br.readLine()));
+        }
         System.out.println("Login");
         return true;
     }
 
     protected void runClient() {
-        // Manages Packages in the queue and Ui
-        new DispatchTask(this).run();
+        // receives Packages
+        while (true) {
+            char c = inputReader.readNextChar();
+            if (c == 'x') {
+                break;
+            }
+            queue.add(new KeyPacket(c));
+        }
+        inputReader.end();
     }
 
 
@@ -104,3 +118,4 @@ public class Client extends Observable<Packet> {
         client.runClient();
     }
 }
+*/

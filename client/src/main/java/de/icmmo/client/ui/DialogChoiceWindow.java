@@ -14,7 +14,7 @@ public class DialogChoiceWindow extends Window {
      */
     public DialogChoiceWindow(Rectangle dimensions, Client client, String[] choices, Function<Integer, Window> windowGenerator) {
         super(dimensions);
-        multiChoiceWindow = new MultiChoiceWindow(dimensions, client, choices);
+        multiChoiceWindow = new MultiChoiceWindow(new Rectangle(0, 0, dimensions.getWidth(), dimensions.getHeight()), client, choices);
         multiChoiceWindow.setCallback(this::openWindowAction);
         children.add(multiChoiceWindow);
         this.windowGenerator = windowGenerator;

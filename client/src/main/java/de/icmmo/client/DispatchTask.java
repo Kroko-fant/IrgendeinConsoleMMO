@@ -2,23 +2,22 @@ package de.icmmo.client;
 
 import de.icmmo.client.ui.MainWindow;
 
-public class DispatchThread extends Thread{
+public class DispatchTask {
 
     private final Client client;
     private final MainWindow mainWindow;
 
-    public DispatchThread(Client client) {
+    public DispatchTask(Client client) {
         this.client = client;
         this.mainWindow = new MainWindow(client);
     }
 
-    @Override
     public void run() {
         mainWindow.draw();
-        while (!isInterrupted()){
+        while (mainWindow.isEnabled()) {
             boolean update;
             try {
-                update = client.handle( client.queue.take());
+                update = client.handle(client.queue.take());
             } catch (InterruptedException e) {
                 return;
             }
