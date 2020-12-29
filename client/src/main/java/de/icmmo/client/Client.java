@@ -2,7 +2,6 @@ package de.icmmo.client;
 
 import de.icmmo.client.observer.Observable;
 import de.icmmo.shared.ConnectionPacket;
-import de.icmmo.shared.KeyPacket;
 import de.icmmo.shared.Packet;
 
 import java.io.*;
@@ -46,12 +45,14 @@ public class Client extends Observable<Packet> {
 
         // Checks for Login/Register
         packet = (ConnectionPacket) queue.take();
-        System.out.println(packet.getText());
 
-        //Answers the server if the client wants to register or login
-        outputChannel.writeObject(new ConnectionPacket(null, br.readLine(), ""));
+        while (packet.getRequesttype().equals("auth")) {
+            System.out.println(packet.getText());
 
-        packet = (ConnectionPacket) queue.take();
+            //Answers the server if the client wants to register or login
+            outputChannel.writeObject(new ConnectionPacket(null, br.readLine(), ""));
+            packet = (ConnectionPacket) queue.take();
+        }
 
         while (packet.getSuccess() == null || !packet.getSuccess()) {
             System.out.println(packet.getText());

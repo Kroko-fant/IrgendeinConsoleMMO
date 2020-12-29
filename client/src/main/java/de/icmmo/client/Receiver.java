@@ -25,14 +25,13 @@ public class Receiver extends Thread {
                         continue;
                     client.queue.add(packet);
                 } catch (IOException | ClassNotFoundException ignored) {
-                    System.out.println("Error receiving a package " +ignored.getMessage());
+                    if (ignored.getMessage().equals("Connection reset")){
+                        return;
+                    }
                 }
             }
         } catch (IOException ignored) {
             System.err.println("IO-Exception! Connection closed");
-
         }
     }
-
-
 }
