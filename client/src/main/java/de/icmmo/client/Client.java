@@ -26,12 +26,14 @@ public class Client extends Observable<Packet> {
 
         // Starts a receiver that puts packages in the queue
         this.receiver = new Receiver(socket, this);
-        this.queue = new LinkedBlockingQueue<>();
         receiver.setDaemon(true);
         receiver.start();
+        this.queue = new LinkedBlockingQueue<>();
 
         if (!login())
             throw new LoginException();
+
+
 
         // Uses an input handler depending on the operating system
         if (System.getProperties().getProperty("os.name").startsWith("Windows")) {
@@ -47,9 +49,14 @@ public class Client extends Observable<Packet> {
 
     private boolean login() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        ConnectionPacket packet;
+        ConnectionPacket packet = null;
         do {
-            packet = (ConnectionPacket) queue.poll();
+            try {
+                packet = (ConnectionPacket) queue.take();
+                System.out.println("Package Client!");
+            } catch (InterruptedException e) {
+                continue;
+            }
             switch (Objects.requireNonNull(packet).getRequesttype()) {
                 case "username" -> outputChannel.writeObject(new ConnectionPacket(null, packet.getRequesttype(),
                         br.readLine()));
@@ -57,6 +64,7 @@ public class Client extends Observable<Packet> {
                 case "password" -> outputChannel.writeObject(new ConnectionPacket(null, packet.getRequesttype(),
                         br.readLine()));
             }
+            System.out.println("Package client?");
 
         } while (Objects.requireNonNull(packet).getSuccess() != null || !packet.getSuccess());
         return true;
