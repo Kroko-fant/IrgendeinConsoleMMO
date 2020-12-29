@@ -6,10 +6,6 @@ public class BorderedWindow extends Window {
 
     protected BorderedWindow(Rectangle dimensions) {
         super(dimensions);
-    }
-
-    @Override
-    protected void initWindow() {
         Arrays.fill(drawnImage[0], '\u2550');
         Arrays.fill(drawnImage[dimensions.getHeight() - 1], '\u2550');
         for (int i = 0; i < dimensions.getHeight(); ++i) {

@@ -9,13 +9,12 @@ import java.util.function.IntConsumer;
 public class MultiChoiceWindow extends Window {
 
     private final String[] choices;
-    private final IntConsumer callback;
+    private IntConsumer callback = null;
     private int choice = 0;
 
-    protected MultiChoiceWindow(Rectangle dimensions, Client client, String[] choices, IntConsumer callback) {
+    protected MultiChoiceWindow(Rectangle dimensions, Client client, String[] choices) {
         super(dimensions);
         this.choices = choices;
-        this.callback = callback;
         client.addObserver(this::receive);
         writeValues();
         updateWindow();
@@ -44,8 +43,12 @@ public class MultiChoiceWindow extends Window {
         }
     }
 
+    public void setCallback(IntConsumer callback) {
+        this.callback = callback;
+    }
+
     private boolean handleKeyInput(char c) {
-        if (choices.length == 0) return false;
+        if (choices.length == 0 || !enabled) return false;
         return switch (c) {
             case 's' -> {
                 // Move down
@@ -61,14 +64,11 @@ public class MultiChoiceWindow extends Window {
             }
             case ' ' -> {
                 // Confirm
-                callback.accept(choice);
-                yield false;
+                if (callback != null) callback.accept(choice);
+                yield true;
             }
             default -> false;
         };
     }
-
-    @Override
-    protected void initWindow() { }
 
 }

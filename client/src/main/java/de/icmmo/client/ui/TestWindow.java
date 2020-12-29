@@ -6,9 +6,9 @@ public class TestWindow extends Window {
 
     protected TestWindow(int x, int y) {
         super(new Rectangle(x, y, TEXT.length(), 1));
+        initWindow();
     }
 
-    @Override
     protected void initWindow() {
         System.arraycopy(TEXT.toCharArray(), 0, drawnImage[0], 0, dimensions.getWidth());
     }

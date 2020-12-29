@@ -12,6 +12,8 @@ public abstract class Window {
     protected final List<Window> children;
     // The window drawn on repaint is stored in here
     protected final char[][] drawnImage;
+    protected boolean enabled = true;
+    private Runnable closeCallback = null;
 
     protected Window(Rectangle dimensions) {
         this.dimensions = dimensions;
@@ -20,13 +22,22 @@ public abstract class Window {
         for (char[] chars : drawnImage) {
             Arrays.fill(chars, ' ');
         }
-        initWindow();
+    }
+
+    public void close() {
+        this.enabled = false;
+        if (closeCallback != null) closeCallback.run();
+        for (Window child : children) {
+            child.close();
+        }
     }
 
     /**
-     * Initial paint of window
+     * The parent window may register to get notified when window closes
      */
-    protected abstract void initWindow();
+    public void setCloseCallback(Runnable closeCallback) {
+        this.closeCallback = closeCallback;
+    }
 
     /**
      * @param offsetX   the total x offset of this window in the buffer
@@ -46,7 +57,9 @@ public abstract class Window {
             System.arraycopy(drawnImage[i - posY], 0, buffer[i], posX, drawWidth);
         }
         // Paint children
-        children.forEach(c -> c.repaint(posX, posY, drawWidth, drawHeight, buffer));
+        children.forEach(c -> {
+            if (c.enabled) c.repaint(posX, posY, drawWidth, drawHeight, buffer);
+        });
     }
 
     protected void writeText(int x, int y, String text) {
