@@ -16,7 +16,7 @@ public class MultiChoiceWindow extends Window {
         super(dimensions);
         this.choices = choices;
         this.callback = callback;
-        //client.addObserver(this::receive);
+        client.addObserver(this::receive);
         writeValues();
         updateWindow();
     }
@@ -62,7 +62,7 @@ public class MultiChoiceWindow extends Window {
             case ' ' -> {
                 // Confirm
                 callback.accept(choice);
-                yield true;
+                yield false;
             }
             default -> false;
         };

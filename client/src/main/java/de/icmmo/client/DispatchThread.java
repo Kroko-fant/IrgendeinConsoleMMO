@@ -16,7 +16,12 @@ public class DispatchThread extends Thread{
     public void run() {
         mainWindow.draw();
         while (!isInterrupted()){
-            boolean update = client.handle( client.queue.poll());
+            boolean update;
+            try {
+                update = client.handle( client.queue.take());
+            } catch (InterruptedException e) {
+                return;
+            }
             if (update) {
                 mainWindow.draw();
             }

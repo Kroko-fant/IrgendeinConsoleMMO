@@ -11,7 +11,7 @@ public class MainWindow extends BorderedWindow {
         //Testing
         BorderedWindow win = new BorderedWindow(new Rectangle(4, 3, 20, 10));
         children.add(win);
-        win.children.add(new MultiChoiceWindow(new Rectangle(1, 1, 18, 7), client, new String[]{"Test1", "Test2", "Test2", "Test2", "Test2", "Test2", "Exit"}, c -> {}));
+        win.children.add(new MultiChoiceWindow(new Rectangle(1, 1, 18, 7), client, new String[]{"Test1blaaaaaaaaaaaa", "Test2", "Test2", "Test2", "Test2", "Test2", "Exit"}, c -> {}));
     }
 
     @Override
@@ -21,6 +21,7 @@ public class MainWindow extends BorderedWindow {
 
     public void draw() {
         repaint(0, 0, dimensions.getWidth(), dimensions.getHeight(), drawnImage);
+
         // print window
         for (int i = 0; i < dimensions.getHeight(); ++i) {
             System.out.println(drawnImage[i]);
