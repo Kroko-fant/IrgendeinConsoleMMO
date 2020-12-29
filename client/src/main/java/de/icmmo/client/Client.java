@@ -13,6 +13,7 @@ public class Client extends Observable<Packet> {
     private final Socket socket;
     private final ObjectOutputStream outputChannel;
     private final Thread receiver;
+    private final KeyInputThread inputThread;
     protected final LinkedBlockingQueue<Packet> queue;
 
     public Client(String ip, int port) throws IOException, LoginException, InterruptedException {
@@ -30,9 +31,9 @@ public class Client extends Observable<Packet> {
             throw new LoginException();
 
         // Reads input and adds in queue
-        Thread input = new KeyInputThread(this);
-        input.setDaemon(true);
-        input.start();
+        inputThread = new KeyInputThread(this);
+        inputThread.setDaemon(true);
+        inputThread.start();
     }
 
     private boolean login() throws IOException, InterruptedException {
@@ -68,6 +69,8 @@ public class Client extends Observable<Packet> {
     protected void runClient() {
         // Manages Packages in the queue and Ui
         new DispatchTask(this).run();
+
+        inputThread.stopRead();
     }
 
 
