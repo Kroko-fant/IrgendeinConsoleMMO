@@ -1,5 +1,7 @@
 package de.icmmo.client;
 
+import de.icmmo.client.observer.Observable;
+import de.icmmo.shared.KeyPacket;
 import de.icmmo.shared.Packet;
 
 import java.io.*;
@@ -7,14 +9,13 @@ import java.net.Socket;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class Client {
+public class Client extends Observable<Packet> {
 
-    private Socket socket;
+    private final Socket socket;
     private final Thread receiver;
     private Thread sender;
     private final Reader inputReader;
     protected final ConcurrentLinkedQueue<Packet> queue;
-
 
     public Client(String ip, int port) throws IOException {
         this.socket = new Socket(ip, port);
@@ -24,7 +25,7 @@ public class Client {
         } else {
             this.inputReader = new LinuxReader();
         }
-        this.queue = new ConcurrentLinkedQueue<Packet>();
+        this.queue = new ConcurrentLinkedQueue<>();
     }
 
     protected void runClient() {
@@ -32,16 +33,16 @@ public class Client {
         receiver.start();
         while (receiver.isAlive()){
             char c = inputReader.readNextChar();
-            System.out.println(c == 'x');
             if (c == 'x'){
                 break;
             }
+            queue.add(new KeyPacket(c));
         }
         inputReader.end();
     }
 
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) {
 
         //TODO: Remove this
         if (args.length == 0)
