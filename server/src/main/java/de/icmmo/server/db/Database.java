@@ -44,10 +44,24 @@ public class Database {
         return connection;
     }
 
-    public boolean validateLogin(String username, String password) throws SQLException {
-        PreparedStatement  statement = connection.prepareStatement(DefaultQueries.searchUserAndPassword);
-        statement.setString(0, username);
-        statement.setString(1, password);
+    public boolean validateLogin(String username, String password) throws SQLException, IndexOutOfBoundsException {
+        PreparedStatement statement = connection.prepareStatement(DefaultQueries.searchUserAndPassword);
+        statement.setString(1, username);
+        statement.setString(2, password);
+
         return statement.executeQuery().getFetchSize() == 1;
+    }
+
+    public boolean userNameTaken(String username) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement(DefaultQueries.checkUserName);
+        statement.setString(1, username);
+        return statement.executeQuery().getFetchSize() > 0;
+    }
+
+    public void insertUser(String username, String password) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement(DefaultQueries.insertUser);
+        statement.setString(1, username);
+        statement.setString(2, password);
+        statement.executeQuery();
     }
 }

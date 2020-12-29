@@ -62,7 +62,8 @@ public class Server {
                 if (users[temp] == null) {
                     try {
                         users[temp] = new User(incomingConnection);
-                        users[temp].write(new ConnectionPacket(true));
+                        users[temp].write(
+                                new ConnectionPacket(true, "success", "Connection successful"));
                     } catch (IOException ignored) {
                         return false;
                     }

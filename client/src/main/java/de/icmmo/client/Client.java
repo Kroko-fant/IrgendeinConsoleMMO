@@ -19,21 +19,19 @@ public class Client extends Observable<Packet> {
     private final DispatchThread dispatchThread;
     protected final LinkedBlockingQueue<Packet> queue;
 
-    public Client(String ip, int port) throws IOException, LoginException {
+    public Client(String ip, int port) throws IOException, LoginException, InterruptedException {
         // Initialising socket and outputchannel
         this.socket = new Socket(ip, port);
         this.outputChannel = new ObjectOutputStream(socket.getOutputStream());
 
         // Starts a receiver that puts packages in the queue
+        this.queue = new LinkedBlockingQueue<>();
         this.receiver = new Receiver(socket, this);
         receiver.setDaemon(true);
         receiver.start();
-        this.queue = new LinkedBlockingQueue<>();
 
         if (!login())
             throw new LoginException();
-
-
 
         // Uses an input handler depending on the operating system
         if (System.getProperties().getProperty("os.name").startsWith("Windows")) {
@@ -47,26 +45,30 @@ public class Client extends Observable<Packet> {
         dispatchThread.start();
     }
 
-    private boolean login() throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    private boolean login() throws IOException, InterruptedException {
         ConnectionPacket packet = null;
-        do {
-            try {
-                packet = (ConnectionPacket) queue.take();
-                System.out.println("Package Client!");
-            } catch (InterruptedException e) {
-                continue;
-            }
-            switch (Objects.requireNonNull(packet).getRequesttype()) {
-                case "username" -> outputChannel.writeObject(new ConnectionPacket(null, packet.getRequesttype(),
-                        br.readLine()));
-                // thats not secure
-                case "password" -> outputChannel.writeObject(new ConnectionPacket(null, packet.getRequesttype(),
-                        br.readLine()));
-            }
-            System.out.println("Package client?");
 
-        } while (Objects.requireNonNull(packet).getSuccess() != null || !packet.getSuccess());
+        // Initialise a inputreader and send a login request to the server
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        outputChannel.writeObject(new ConnectionPacket(true, "start", ""));
+
+        // Checks for Login/Register
+        packet = (ConnectionPacket) queue.take();
+        System.out.println(packet.getText());
+
+        //Answers the server if the client wants to register or login
+        outputChannel.writeObject(new ConnectionPacket(null, br.readLine(), ""));
+
+        packet = (ConnectionPacket) queue.take();
+
+
+        while (packet == null || packet.getSuccess() == null || !packet.getSuccess()) {
+            packet = (ConnectionPacket) queue.take();
+            System.out.println(packet.getText());
+            outputChannel.writeObject(new ConnectionPacket(null, packet.getRequesttype(),
+                    br.readLine()));
+        }
+        System.out.println("Login");
         return true;
     }
 
@@ -108,6 +110,9 @@ public class Client extends Observable<Packet> {
             return;
         } catch (LoginException ignored) {
             System.err.println("Failed to log in!");
+            return;
+        } catch (InterruptedException ignored) {
+            System.err.println("Client wurde unerwartet beendet");
             return;
         }
         client.runClient();
