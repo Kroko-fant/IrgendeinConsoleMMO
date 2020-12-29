@@ -9,10 +9,11 @@ public class WeakObserver<T> extends WeakReference<Observer<T>> implements Obser
     }
 
     @Override
-    public void receive(T value) {
+    public boolean receive(T value) {
         Observer<T> observer = super.get();
         if (observer != null) {
-            observer.receive(value);
+            return observer.receive(value);
         }
+        return false;
     }
 }

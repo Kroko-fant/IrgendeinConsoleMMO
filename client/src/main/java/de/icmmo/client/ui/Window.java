@@ -1,5 +1,7 @@
 package de.icmmo.client.ui;
 
+import de.icmmo.client.Client;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,8 +17,8 @@ public abstract class Window {
         this.dimensions = dimensions;
         children = new LinkedList<>();
         drawnImage = new char[dimensions.getHeight()][dimensions.getWidth()];
-        for (int i = 0; i < drawnImage.length; ++i) {
-            Arrays.fill(drawnImage[i], ' ');
+        for (char[] chars : drawnImage) {
+            Arrays.fill(chars, ' ');
         }
         initWindow();
     }
@@ -45,5 +47,10 @@ public abstract class Window {
         }
         // Paint children
         children.forEach(c -> c.repaint(posX, posY, drawWidth, drawHeight, buffer));
+    }
+
+    protected void writeText(int x, int y, String text) {
+        final int width = text.length();
+        System.arraycopy(text.toCharArray(), 0, drawnImage[y], x, width);
     }
 }

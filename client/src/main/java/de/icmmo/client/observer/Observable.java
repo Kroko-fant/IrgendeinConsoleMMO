@@ -11,8 +11,12 @@ public class Observable<T> {
         observer.add(new WeakObserver<>(o));
     }
 
-    public void handle(T value) {
-        observer.forEach(o -> o.receive(value));
+    public boolean handle(T value) {
+        boolean action = false;
+        for (Observer<T> o : observer) {
+            if (o.receive(value)) action = true;
+        }
         observer.removeIf(o -> o.get() == null);
+        return action;
     }
 }

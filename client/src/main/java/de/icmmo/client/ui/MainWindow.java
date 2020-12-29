@@ -1,19 +1,18 @@
 package de.icmmo.client.ui;
 
-import java.util.Arrays;
+import de.icmmo.client.Client;
 
-public class MainWindow extends Window {
+public class MainWindow extends BorderedWindow {
 
-    protected MainWindow(int width, int height) {
-        super(new Rectangle(0, 0, width, height));
+    public static final int WIDTH = 60, HEIGHT = 20;
+
+    public MainWindow(Client client) {
+        super(new Rectangle(0, 0, WIDTH, HEIGHT));
     }
 
     @Override
     protected void initWindow() {
-        //fill header
-        Arrays.fill(drawnImage[0], '-');
-
-        Arrays.fill(drawnImage[dimensions.getHeight() - 1], '-');
+        super.initWindow();
     }
 
     public void draw() {
@@ -25,7 +24,7 @@ public class MainWindow extends Window {
     }
 
     public static void main(String[] args) {
-        MainWindow window = new MainWindow(60, 15);
+        MainWindow window = new MainWindow(null);
         window.draw();
     }
 

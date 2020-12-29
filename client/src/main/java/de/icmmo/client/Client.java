@@ -13,7 +13,7 @@ public class Client extends Observable<Packet> {
     private final Socket socket;
     private final Thread receiver;
     private final Reader inputReader;
-    private final PacketManager packetManager;
+    private final DispatchThread dispatchThread;
     protected final LinkedBlockingQueue<Packet> queue;
 
     public Client(String ip, int port) throws IOException {
@@ -26,10 +26,10 @@ public class Client extends Observable<Packet> {
             this.inputReader = new LinuxReader();
         }
         // Manages Packages in the queue
-        packetManager = new PacketManager(this);
-        packetManager.setDaemon(true);
+        dispatchThread = new DispatchThread(this);
+        dispatchThread.setDaemon(true);
         this.queue = new LinkedBlockingQueue<>();
-        packetManager.start();
+        dispatchThread.start();
     }
 
     protected void runClient() {
