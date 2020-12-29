@@ -35,7 +35,7 @@ public class WindowsReader extends Reader {
     public char readNextChar() {
         while (blockingQueue.isEmpty()) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

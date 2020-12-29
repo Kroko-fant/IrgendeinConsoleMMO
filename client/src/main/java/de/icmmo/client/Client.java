@@ -6,26 +6,30 @@ import de.icmmo.shared.Packet;
 
 import java.io.*;
 import java.net.Socket;
-
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Client extends Observable<Packet> {
 
     private final Socket socket;
     private final Thread receiver;
-    private Thread sender;
     private final Reader inputReader;
-    protected final ConcurrentLinkedQueue<Packet> queue;
+    private final PacketManager packetManager;
+    protected final LinkedBlockingQueue<Packet> queue;
 
     public Client(String ip, int port) throws IOException {
         this.socket = new Socket(ip, port);
+
         this.receiver = new Receiver(socket, this);
         if (System.getProperties().getProperty("os.name").startsWith("Windows")){
             this.inputReader = new WindowsReader();
         } else {
             this.inputReader = new LinuxReader();
         }
-        this.queue = new ConcurrentLinkedQueue<>();
+        // Manages Packages in the queue
+        packetManager = new PacketManager(this);
+        packetManager.setDaemon(true);
+        this.queue = new LinkedBlockingQueue<>();
+        packetManager.start();
     }
 
     protected void runClient() {
@@ -43,10 +47,9 @@ public class Client extends Observable<Packet> {
 
 
     public static void main(String[] args) {
-
         //TODO: Remove this
-        if (args.length == 0)
-            args = new String[]{"localhost", "80"};
+        args = new String[]{"localhost", "6969"};
+
         System.out.println("Connecting...");
         if (args.length > 2){
             System.err.println("Invalid Args! Args should be length 2");
